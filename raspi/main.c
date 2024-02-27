@@ -9,6 +9,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "HTTP.h"
+
 int main(){
     int raspi_socket, client_socket;
     struct sockaddr_in raspi_addr, client_addr;
@@ -52,8 +54,14 @@ int main(){
         }
         
         read(client_socket, requestBuf, BUFSIZ);
+        printf("%s\n\n", requestBuf);
+
+        struct request reqData;
+
+        if (splitRequest(&reqData, requestBuf) != 0)
+            continue;
         
-        if (requestBuf[0] == 'G' && requestBuf[1] == 'E' && requestBuf[2] == 'T'){  // response to get
+        if (!strcmp(reqData.requestStartLine.HTTP_method, "GET")){  // response to get
         
             // status line area
             readSize = sprintf(responseBuf, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n");  
