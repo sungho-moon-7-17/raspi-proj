@@ -62,16 +62,19 @@ int main(){
         struct request reqData;
 
         if (splitRequest(&reqData, requestBuf) != SUCCESS)
+        {
+            printf("fail SplitRequest function : %d\n", getLastErrCode());
             continue;
+        }
         
-        if (!strcmp(reqData.startLine.HTTP_method, "GET"))  // response to get
-        {
-            ProcessGetRequest(client_socket, reqData);
-        }
+        // process request command
+        if (strcmp(reqData.startLine.HTTP_method, "GET") == 0)
+            processGetRequest(client_socket, reqData);
         else
-        {
-            printf("error\n\n");
-        }
+            printf("command not find  : %s\n", reqData.startLine.HTTP_method);
+
+        if (getLastErrCode() != SUCCESS)
+            printf("fail process function : %d\n", getLastErrCode);
 
         close(client_socket);
 

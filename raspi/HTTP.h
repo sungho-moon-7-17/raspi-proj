@@ -15,18 +15,19 @@ enum HTTPErrorCode{
     fail_noMatchContentType,
 };
 
+enum HTTPErrorCode getLastErrCode();
+
 // request data structure
 struct request_start{
-char * HTTP_method;
-char * request_target;
-char * HTTP_ver;
+    char * HTTP_method;
+    char * request_target;
+    char * HTTP_ver;
 };
 
 struct request{
-struct request_start startLine;
-char * header;
-char * body;
-
+    struct request_start startLine;
+    char * header;
+    char * body;
 } ;
 
 enum HTTPErrorCode splitRequest(struct request * target, char * str);
@@ -50,6 +51,6 @@ struct response{
     char * body;
 };
 
-int ProcessGetRequest(int client_socket, struct request reqData);
+int processGetRequest(int client_socket, struct request reqData);
 
 #endif

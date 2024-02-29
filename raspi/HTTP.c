@@ -6,6 +6,11 @@
 #include <unistd.h>
 #include <string.h>
 
+static enum HTTPErrorCode lastErrCode;
+enum HTTPErrorCode getLastErrCode(){
+    return lastErrCode;
+}
+
 #pragma region request
 static bool splitRequestStartLine(struct request_start * target, char * str);
 
@@ -23,7 +28,7 @@ enum HTTPErrorCode splitRequest(struct request * target, char * str)
     }
 
 SplitRequestStartLine_RETURN:
-    return errCode;
+    return lastErrCode = errCode;
 }
 
 static bool splitRequestStartLine(struct request_start * target, char * str)
@@ -42,10 +47,11 @@ static bool splitRequestStartLine(struct request_start * target, char * str)
 
 
 #pragma region response
-static void GetResponseMessage(struct response respData, char * message);
-static enum HTTPErrorCode GetContentType(char * fileName, struct response * respData);
+static void initResponse(struct response * respData);
+static void getResponseMessage(struct response respData, char * message);
+static enum HTTPErrorCode getContentType(char * fileName, struct response * respData);
 
-int ProcessGetRequest(int client_socket, struct request reqData)
+int processGetRequest(int client_socket, struct request reqData)
 {
     struct response respData;
     char responseBuf[BUFSIZ];
@@ -53,6 +59,7 @@ int ProcessGetRequest(int client_socket, struct request reqData)
     enum HTTPErrorCode errCode = DEFAULT;
     char fileName[100];
 
+    initResponse(&respData);    // respData 초기화
     // 파일 이름 설정
     sprintf(fileName, "%s/tic%s", ABSOLUTE_PATH, (strtok(reqData.startLine.request_target, "/"))?reqData.startLine.request_target:"/index.html");
 
@@ -61,23 +68,23 @@ int ProcessGetRequest(int client_socket, struct request reqData)
     {
         respData.startLine.stat_code = "200";
         respData.startLine.stat_text = "OK";
+        
+        errCode = getContentType(fileName, &respData);
     }
     else
     {
         respData.startLine.stat_code = "404";
         respData.startLine.stat_text = "Not Found";
 
-        errCode += fail_notFindFile;
+        errCode = fail_notFindFile;
     }
 
-    errCode += GetContentType(fileName, &respData);
 
-    GetResponseMessage(respData, responseBuf);
-    printf("response ------\n%s\n\n", responseBuf);
+    getResponseMessage(respData, responseBuf);
     write(client_socket, responseBuf, strlen(responseBuf));
 
     if (errCode != DEFAULT)
-        return -1;
+        goto ProcessGetRequest_RETURN;
 
     int fd = open(fileName, O_RDONLY);  // file open
     while((readSize = read(fd, responseBuf, BUFSIZ)) > 0)  // send file content                       
@@ -88,10 +95,16 @@ int ProcessGetRequest(int client_socket, struct request reqData)
 
     write(client_socket, "\r\n", 2);    // response의 끝을 알리는 개행문자
 
-    return 0;
+ProcessGetRequest_RETURN:
+    return lastErrCode = errCode;
 }
 
-static enum HTTPErrorCode GetContentType(char * fileName, struct response * respData)
+static void initResponse(struct response * respData)
+{
+    respData->header.content_type = NULL;
+}
+
+static enum HTTPErrorCode getContentType(char * fileName, struct response * respData)
 {
     enum HTTPErrorCode errCode = DEFAULT;
     char * requestTargetType[] = {
@@ -110,8 +123,6 @@ static enum HTTPErrorCode GetContentType(char * fileName, struct response * resp
     };
     int len = sizeof(contentType) / sizeof(char *);
 
-    respData->header.content_type = NULL;
-
     for (int i = 0; i < len; i++)
     {
         if (strstr(fileName, requestTargetType[i]))
@@ -123,17 +134,18 @@ static enum HTTPErrorCode GetContentType(char * fileName, struct response * resp
     errCode = fail_noMatchContentType;
 
 GetContentType_RETURN:
-    return errCode;
+    return lastErrCode = errCode;
 }
 
-static void GetResponseMessage(struct response respData, char * message)
+static void getResponseMessage(struct response respData, char * message)
 {
     // status line
     sprintf(message, "%s %s %s\r\n", respData.startLine.HTTP_ver, respData.startLine.stat_code, respData.startLine.stat_text);
     // header
     if (respData.header.content_type != NULL)
-        sprintf(message + strlen(message), "Content-Type: %s\r\n\r\n", respData.header.content_type);
+        sprintf(message + strlen(message), "Content-Type: %s\r\n", respData.header.content_type);
 
+    strcat(message, "\r\n");    // header 끝은 "\r\n\r\n"로 표기됨
 }
 
 #pragma endregion
