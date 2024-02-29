@@ -1,0 +1,48 @@
+#main-table{
+    background-color: black;
+    position: absolute;
+    width: 400px;
+    height: 500px;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+}
+
+div#result{
+    width: 400px;
+    height: 100px;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    line-height: 100px;
+}
+
+table{
+    width: 400px;
+    height: 400px;
+}
+
+tr{
+    height: calc(100% / 3);
+}
+
+td{
+    width: calc(100% / 3);
+    text-align: center;
+    background-color: #aaa;
+    position: relative;
+}
+
+table button{
+    font-size: 50px;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+}
