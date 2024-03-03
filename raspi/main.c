@@ -74,7 +74,7 @@ int main(){
             printf("command not find  : %s\n", reqData.startLine.HTTP_method);
 
         if (getLastErrCode() != SUCCESS)
-            printf("fail process function : %d\n", getLastErrCode);
+            printf("fail process function : %d\n", getLastErrCode());
 
         close(client_socket);
 

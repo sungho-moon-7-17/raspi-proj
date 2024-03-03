@@ -61,7 +61,7 @@ int processGetRequest(int client_socket, struct request reqData)
 
     initResponse(&respData);    // respData 초기화
     // 파일 이름 설정
-    sprintf(fileName, "%s/tic%s", ABSOLUTE_PATH, (strtok(reqData.startLine.request_target, "/"))?reqData.startLine.request_target:"/index.html");
+    sprintf(fileName, "%s%s", ABSOLUTE_PATH, (strtok(reqData.startLine.request_target, "/"))?reqData.startLine.request_target:"/index.html");
 
     respData.startLine.HTTP_ver = reqData.startLine.HTTP_ver;
     if (access(fileName, F_OK) == 0)
