@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build raspi project",
+            "type": "shell",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-g",
+                "${workspaceFolder}/raspi/main.c",
+                "${workspaceFolder}/raspi/HTTP.c",
+                "${workspaceFolder}/raspi/HTTP.h",
+                "-o",
+                "${workspaceFolder}/raspi/a.out"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}

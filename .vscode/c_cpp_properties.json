@@ -1,0 +1,26 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/src/linux-headers-6.1.0-rpi8-common-rpi/include/**",
+                "${workspaceFolder}/**",
+                "/usr/src/linux-headers-6.1.0-rpi8-common-rpi/arch/arm64/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-arm64",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "/usr/src/linux-headers-6.1.0-rpi8-common-rpi/include/**",
+                    "/usr/src/linux-headers-6.1.0-rpi8-common-rpi/arch/arm64/include/**"
+            ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}
