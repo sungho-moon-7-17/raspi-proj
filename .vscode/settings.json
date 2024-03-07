@@ -29,6 +29,8 @@
         "processor.h": "c",
         "alternative.h": "c",
         "alternative-macros.h": "c",
-        "functional": "c"
+        "functional": "c",
+        "io.h": "c",
+        "gpio_control.h": "c"
     }
 }
