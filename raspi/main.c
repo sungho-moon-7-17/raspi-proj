@@ -49,6 +49,8 @@ int main(){
     {
         char requestBuf[BUFSIZ];
 
+        memset(requestBuf, 0, BUFSIZ);
+
         client_socket = accept(raspi_socket, (struct sockaddr *)&client_addr, &client_addr_len);
         if (client_socket == -1)
         {
@@ -64,18 +66,21 @@ int main(){
         if (splitRequest(&reqData, requestBuf) != SUCCESS)
         {
             printf("fail SplitRequest function : %d\n", getLastErrCode());
-            continue;
+            goto END_ACCEPT;
         }
         
         // process request command
         if (strcmp(reqData.startLine.HTTP_method, "GET") == 0)
             processGetRequest(client_socket, reqData);
+        else if (strcmp(reqData.startLine.HTTP_method, "PUT") == 0)
+            processPutRequest(client_socket, reqData);
         else
             printf("command not find  : %s\n", reqData.startLine.HTTP_method);
 
         if (getLastErrCode() != SUCCESS)
             printf("fail process function : %d\n", getLastErrCode());
 
+END_ACCEPT:
         close(client_socket);
 
     }

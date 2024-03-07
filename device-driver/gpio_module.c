@@ -2,6 +2,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/cdev.h>
+#include <asm/uaccess.h>
 
 #include "gpio_control.h"
 
@@ -13,13 +14,11 @@ static dev_t gpio_dev_t;
 static struct class * gpio_class;
 static struct device * gpio_device;
 
-static int gpio_module_open (struct inode *, struct file *){
-    pr_info("file open\n");
+static int gpio_module_open (struct inode *a, struct file *b){
     return 0;
 }
 
-static int gpio_module_close (struct inode *, struct file *){
-    pr_info("file close\n");
+static int gpio_module_close (struct inode *a, struct file *b){
     return 0;
 }
 
@@ -28,6 +27,13 @@ static ssize_t gpio_module_read(struct file * filp, char __user * buf, size_t le
 }
 
 static ssize_t gpio_module_write(struct file * filp, const char __user * buf, size_t length, loff_t * offset){
+    char driverBuf[2];
+
+    if (copy_from_user(driverBuf, buf, length)) {
+		pr_err("write: error\n");
+	}
+
+    gc_setOutput(driverBuf[0], driverBuf[1]);
     return 0;
 }
 

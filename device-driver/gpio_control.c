@@ -11,21 +11,10 @@ int gc_init(void){
         return -1;
     }   
 
-    gc_setDirection(4, 1);
-    gc_setOutput(4, 1);
-    udelay(1);
-    pr_info("%d", gc_stateGPIO(4));
-
     return 0;
 }
 
 void gc_exit(void){
-    gc_setDirection(4, 0);
-    gc_setOutput(4, 0);
-    udelay(1);
-
-    pr_info("%d", gc_stateGPIO(4));
-
     iounmap(gpio_baseAddress);
 }
 
