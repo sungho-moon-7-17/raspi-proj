@@ -57,6 +57,8 @@ SplitRequestStartLine_RETURN:
 
 
 #pragma region response
+static char responseBuf[BUFSIZ];
+
 
 static void initResponse(struct response * respData)
 {
@@ -110,7 +112,6 @@ static void getResponseMessage(struct response respData, char * message)
 int processGetRequest(int client_socket, struct request reqData)
 {
     struct response respData;
-    char responseBuf[BUFSIZ];
     int readSize;
     enum HTTPErrorCode errCode = DEFAULT;
     char fileName[100];
@@ -156,7 +157,7 @@ ProcessGetRequest_RETURN:
 }
 
 int processPutRequest(int client_socket, struct request reqData){
-    char buf[3];
+    char responseBuf[3];
     int pinNum, pinOutput;
     int driverFd = open("/dev/gpio_driver_class", O_RDWR | O_NDELAY);
 
@@ -165,14 +166,35 @@ int processPutRequest(int client_socket, struct request reqData){
         return -1;
     }
 
-    buf[0] = 1;
-    buf[1] = atoi(strtok(reqData.body, " "));
-    buf[2] = atoi(strtok(NULL, " "));
+    responseBuf[0] = 1;
+    responseBuf[1] = atoi(strtok(reqData.body, " "));
+    responseBuf[2] = atoi(strtok(NULL, " "));
 
-    write(driverFd, buf, 3);
-
+    write(driverFd, responseBuf, 3);
     close(driverFd);
+
+    sprintf(responseBuf, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 1\r\n\r\n%hhd", responseBuf[2]);
+    write(client_socket, responseBuf, strlen(responseBuf));
+
+
     return 0;
+}
+
+int processStatRequest(int client_socket, struct request reqData){
+    char temp;
+    int driverFd = open("/dev/gpio_driver_class", O_RDWR | O_NDELAY);
+
+    if(driverFd < 0){
+        printf("module open error\n");
+        return -1;
+    }
+
+    read(driverFd, &temp, atoi(reqData.body));
+    close(driverFd);
+
+    printf("\n---------%hhd\n", temp);
+    sprintf(responseBuf, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 1\r\n\r\n%hhd", temp);
+    write(client_socket, responseBuf, strlen(responseBuf));
 }
 
 #pragma endregion

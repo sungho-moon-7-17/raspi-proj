@@ -84,7 +84,7 @@ int main(){
             perror("accept fail");
             return -1;
         }
-        
+
         read(client_socket, requestBuf, BUFSIZ);
         printf("%s\n\n", requestBuf);
 
@@ -101,6 +101,8 @@ int main(){
             processGetRequest(client_socket, reqData);
         else if (strcmp(reqData.startLine.HTTP_method, "PUT") == 0)
             processPutRequest(client_socket, reqData);
+        else if (strcmp(reqData.startLine.HTTP_method, "STAT") == 0)
+            processStatRequest(client_socket, reqData);
         else
             printf("command not find  : %s\n", reqData.startLine.HTTP_method);
 
@@ -109,7 +111,6 @@ int main(){
 
 END_ACCEPT:
         close(client_socket);
-
     }
 
     return 0;

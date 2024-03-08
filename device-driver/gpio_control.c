@@ -28,7 +28,7 @@ void gc_setDirection(unsigned int pin, unsigned int direction){
         return ;
     }
 
-    targetAddr = gpio_baseAddress + GPSET + pin/10;
+    targetAddr = gpio_baseAddress + GPFSEL + pin/10;
 
     mask = 0b111 << pin%10 * 3;
     bitSet = direction << pin%10 * 3;

@@ -23,11 +23,17 @@ static int gpio_module_close (struct inode *a, struct file *b){
 }
 
 static ssize_t gpio_module_read(struct file * filp, char __user * buf, size_t length, loff_t * offset){
+    char driverBuf = 0;
+    driverBuf = (gc_stateGPIO(length) == 0)?0:1;
+
+    if (copy_to_user(buf, &driverBuf, 1)) {
+		pr_err("write: error\n");
+	}
     return 0;
 }
 
 static ssize_t gpio_module_write(struct file * filp, const char __user * buf, size_t length, loff_t * offset){
-    char driverBuf[2];
+    char driverBuf[3];
 
     if (copy_from_user(driverBuf, buf, length)) {
 		pr_err("write: error\n");
@@ -37,7 +43,6 @@ static ssize_t gpio_module_write(struct file * filp, const char __user * buf, si
         gc_setDirection(driverBuf[1], driverBuf[2]);
     else if(driverBuf[0] == 1)
         gc_setOutput(driverBuf[1], driverBuf[2]);      
-
     return 0;
 }
 
@@ -112,7 +117,7 @@ static void __exit gpio_module_exit(void){
     unregister_chrdev_region(gpio_dev_t, 1);
 
     gc_exit();
-    
+
     pr_info("gpio kernel module end\n");
 }
 

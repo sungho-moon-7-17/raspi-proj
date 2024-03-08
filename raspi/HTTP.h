@@ -53,5 +53,6 @@ struct response{
 
 int processGetRequest(int client_socket, struct request reqData);
 int processPutRequest(int client_socket, struct request reqData);
+int processStatRequest(int client_socket, struct request reqData);
 
 #endif
