@@ -156,7 +156,7 @@ ProcessGetRequest_RETURN:
 }
 
 int processPutRequest(int client_socket, struct request reqData){
-    char buf[2];
+    char buf[3];
     int pinNum, pinOutput;
     int driverFd = open("/dev/gpio_driver_class", O_RDWR | O_NDELAY);
 
@@ -165,10 +165,11 @@ int processPutRequest(int client_socket, struct request reqData){
         return -1;
     }
 
-    buf[0] = atoi(strtok(reqData.body, " "));
-    buf[1] = atoi(strtok(NULL, " "));
+    buf[0] = 1;
+    buf[1] = atoi(strtok(reqData.body, " "));
+    buf[2] = atoi(strtok(NULL, " "));
 
-    write(driverFd, buf, 2);
+    write(driverFd, buf, 3);
 
     close(driverFd);
     return 0;

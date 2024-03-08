@@ -11,6 +11,32 @@
 
 #include "HTTP.h"
 
+void setGPIOModuleBuf(char * buf, int func, int pin, int value){
+    buf[0] = func;
+    buf[1] = pin;
+    buf[2] = value;
+}
+
+int initGPIOModule(){
+    char buf[3];
+    int pinNum, pinOutput;
+    int driverFd = open("/dev/gpio_driver_class", O_RDWR | O_NDELAY);
+
+    if(driverFd < 0){
+        printf("module open error\n");
+        return -1;
+    }
+
+    setGPIOModuleBuf(buf, 0, 4, 1);
+    write(driverFd, buf, 3);
+
+    setGPIOModuleBuf(buf, 0, 17, 0);
+    write(driverFd, buf, 3);
+
+    close(driverFd);
+    return 0;
+}
+
 int main(){
     int raspi_socket, client_socket;
     struct sockaddr_in raspi_addr, client_addr;
@@ -18,6 +44,7 @@ int main(){
 
     int optval = 1;
 
+    initGPIOModule();
 
     raspi_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (raspi_socket == -1)

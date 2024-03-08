@@ -33,7 +33,11 @@ static ssize_t gpio_module_write(struct file * filp, const char __user * buf, si
 		pr_err("write: error\n");
 	}
 
-    gc_setOutput(driverBuf[0], driverBuf[1]);
+    if(driverBuf[0] == 0)
+        gc_setDirection(driverBuf[1], driverBuf[2]);
+    else if(driverBuf[0] == 1)
+        gc_setOutput(driverBuf[1], driverBuf[2]);      
+
     return 0;
 }
 
@@ -108,6 +112,7 @@ static void __exit gpio_module_exit(void){
     unregister_chrdev_region(gpio_dev_t, 1);
 
     gc_exit();
+    
     pr_info("gpio kernel module end\n");
 }
 
