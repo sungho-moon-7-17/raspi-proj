@@ -4,7 +4,7 @@ document.querySelector(".gpio-4-off").onclick = () => {button_click(4, 0)};
 function button_click(pinNum, pinState){
   console.log("button click")
   
-  fetch('http://192.168.219.108:8080', {
+  fetch(`http://${window.location.hostname}:8080`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ function button_click(pinNum, pinState){
 
 
 function poll_gpio_state() {
-  fetch('http://192.168.219.108:8080', {
+  fetch(`http://${window.location.hostname}:8080`, {
     method: 'STAT',
     body: '17'
   })

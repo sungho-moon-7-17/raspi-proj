@@ -85,8 +85,12 @@ int main(){
             return -1;
         }
 
+        int pid = fork();
+        if (pid > 0){
+            goto END_ACCEPT;
+        }
+
         read(client_socket, requestBuf, BUFSIZ);
-        printf("%s\n\n", requestBuf);
 
         struct request reqData;
 

@@ -192,7 +192,6 @@ int processStatRequest(int client_socket, struct request reqData){
     read(driverFd, &temp, atoi(reqData.body));
     close(driverFd);
 
-    printf("\n---------%hhd\n", temp);
     sprintf(responseBuf, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 1\r\n\r\n%hhd", temp);
     write(client_socket, responseBuf, strlen(responseBuf));
 }
