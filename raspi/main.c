@@ -87,9 +87,11 @@ int main(){
 
         int pid = fork();
         if (pid > 0){
-            goto END_ACCEPT;
+            close(client_socket);
+            waitpid(pid, NULL, 0); // 자식 프로세스 종료 대기
+            continue;
         }
-
+        
         read(client_socket, requestBuf, BUFSIZ);
 
         struct request reqData;
@@ -97,7 +99,8 @@ int main(){
         if (splitRequest(&reqData, requestBuf) != SUCCESS)
         {
             printf("fail SplitRequest function : %d\n", getLastErrCode());
-            goto END_ACCEPT;
+            close(client_socket);
+            exit(1);
         }
         
         // process request command
@@ -112,11 +115,12 @@ int main(){
 
         if (getLastErrCode() != SUCCESS)
             printf("fail process function : %d\n", getLastErrCode());
-
-END_ACCEPT:
+        
         close(client_socket);
+        exit(0);
     }
 
+    close(raspi_socket);
     return 0;
 }
 

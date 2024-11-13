@@ -2,7 +2,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/cdev.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include "gpio_control.h"
 
@@ -28,8 +28,9 @@ static ssize_t gpio_module_read(struct file * filp, char __user * buf, size_t le
 
     if (copy_to_user(buf, &driverBuf, 1)) {
 		pr_err("write: error\n");
+        return -EFAULT;
 	}
-    return 0;
+    return 1;
 }
 
 static ssize_t gpio_module_write(struct file * filp, const char __user * buf, size_t length, loff_t * offset){
@@ -37,13 +38,15 @@ static ssize_t gpio_module_write(struct file * filp, const char __user * buf, si
 
     if (copy_from_user(driverBuf, buf, length)) {
 		pr_err("write: error\n");
+        return -EFAULT;
 	}
 
     if(driverBuf[0] == 0)
         gc_setDirection(driverBuf[1], driverBuf[2]);
     else if(driverBuf[0] == 1)
-        gc_setOutput(driverBuf[1], driverBuf[2]);      
-    return 0;
+        gc_setOutput(driverBuf[1], driverBuf[2]);    
+
+    return length;
 }
 
 static struct file_operations gpio_fops = {
@@ -67,7 +70,7 @@ static int __init gpio_module_init(void){
     }
 
     // device class 생성 (device_create에 사용됨)
-    gpio_class = class_create(THIS_MODULE, DRIVER_CLASS_NAME);
+    gpio_class = class_create(DRIVER_CLASS_NAME);
     if (gpio_class == NULL){
         pr_info("fail create device class\n");
         errCode = -1;

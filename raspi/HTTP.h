@@ -1,7 +1,7 @@
 #ifndef HTTP_H
 #define HTTP_H
 
-#define ABSOLUTE_PATH "/home/sungho/Desktop/project/raspi-proj/raspi/web"
+#define ABSOLUTE_PATH "/home/sungho/project/raspi-proj/raspi/web"
 
 enum HTTPErrorCode{
     DEFAULT = 0,
