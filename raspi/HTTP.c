@@ -157,7 +157,7 @@ ProcessGetRequest_RETURN:
 }
 
 int processPutRequest(int client_socket, struct request reqData){
-    char responseBuf[3];
+    char pinState[3];
     int pinNum, pinOutput;
     int driverFd = open("/dev/gpio_driver_class", O_RDWR | O_NDELAY);
 
@@ -166,14 +166,14 @@ int processPutRequest(int client_socket, struct request reqData){
         return -1;
     }
 
-    responseBuf[0] = 1;
-    responseBuf[1] = atoi(strtok(reqData.body, " "));
-    responseBuf[2] = atoi(strtok(NULL, " "));
+    pinState[0] = 1;
+    pinState[1] = atoi(strtok(reqData.body, " "));
+    pinState[2] = atoi(strtok(NULL, " "));
 
-    write(driverFd, responseBuf, 3);
+    write(driverFd, pinState, 3);
     close(driverFd);
 
-    sprintf(responseBuf, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 1\r\n\r\n%hhd", responseBuf[2]);
+    sprintf(responseBuf, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 1\r\n\r\n%hhd", pinState[2]);
     write(client_socket, responseBuf, strlen(responseBuf));
 
 
@@ -181,7 +181,7 @@ int processPutRequest(int client_socket, struct request reqData){
 }
 
 int processStatRequest(int client_socket, struct request reqData){
-    char temp;
+    char pinState;
     int driverFd = open("/dev/gpio_driver_class", O_RDWR | O_NDELAY);
 
     if(driverFd < 0){
@@ -189,10 +189,10 @@ int processStatRequest(int client_socket, struct request reqData){
         return -1;
     }
 
-    read(driverFd, &temp, atoi(reqData.body));
+    read(driverFd, &pinState, atoi(reqData.body));
     close(driverFd);
 
-    sprintf(responseBuf, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 1\r\n\r\n%hhd", temp);
+    sprintf(responseBuf, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 1\r\n\r\n%hhd", pinState);
     write(client_socket, responseBuf, strlen(responseBuf));
 }
 

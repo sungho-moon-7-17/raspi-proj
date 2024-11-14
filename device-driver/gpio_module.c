@@ -22,9 +22,8 @@ static int gpio_module_close (struct inode *a, struct file *b){
     return 0;
 }
 
-static ssize_t gpio_module_read(struct file * filp, char __user * buf, size_t length, loff_t * offset){
-    char driverBuf = 0;
-    driverBuf = (gc_stateGPIO(length) == 0)?0:1;
+static ssize_t gpio_module_read(struct file * filp, char __user * buf, size_t pinNum, loff_t * offset){
+    char driverBuf = (gc_stateGPIO(pinNum) == 0)?0:1;
 
     if (copy_to_user(buf, &driverBuf, 1)) {
 		pr_err("write: error\n");

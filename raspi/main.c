@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -96,6 +97,7 @@ int main(){
 
         struct request reqData;
 
+        // request command parsing
         if (splitRequest(&reqData, requestBuf) != SUCCESS)
         {
             printf("fail SplitRequest function : %d\n", getLastErrCode());

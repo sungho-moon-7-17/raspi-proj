@@ -3,6 +3,6 @@ button {
   height: 50px;
 }
 
-.gpio-17-input{
+.gpio-17-input, .gpio-4{
   background-color: white;
 }
